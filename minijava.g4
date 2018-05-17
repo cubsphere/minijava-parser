@@ -3,69 +3,92 @@ grammar minijava;
 @header {
 	package minijava;
 }
-goal: MainClass ( ClassDeclaration )*;
+goal: mainClass ( classDeclaration )* EOF;
 
-MainClass: 'class' Identifier '{' 'public' 'static' 'void' 'main' '(' 'String' '[' ']' Identifier ')' '{' Statement '}' '}';
-ClassDeclaration: 'class' Identifier ( 'extends' Identifier )? '{' ( VarDeclaration )* ( MethodDeclaration )* '}';
+mainClass: CLASS IDENTIFIER RCURLY PUBLIC STATIC VOID VOID LBRACKET 'String' LBRACE RBRACE IDENTIFIER RBRACKET LCURLY statement RCURLY;
+classDeclaration: CLASS IDENTIFIER ( EXTENDS IDENTIFIER )? LCURLY ( varDeclaration )* ( methodDeclaration )* RCURLY;
 
-VarDeclaration: Type Identifier ';';
-MethodDeclaration: 'public' Type Identifier '(' ( Type Identifier ( ',' Type Identifier )* )? ')' '{' ( VarDeclaration )* ( Statement )* 'return' Expression ';' '}';
+varDeclaration: type IDENTIFIER SEMICOLON;
+methodDeclaration: PUBLIC type IDENTIFIER LBRACKET ( type IDENTIFIER ( COLON type IDENTIFIER )* )? RBRACKET LCURLY ( varDeclaration )* ( statement )* RETURN expression SEMICOLON RCURLY;
 
-Type: 'int' '[' ']' | 'boolean'| 'int' | Identifier;
-
-Statement:
-  '{' ( Statement )* '}'
-| 'if' '(' Expression ')' Statement 'else' Statement
-| 'while' '(' Expression ')' Statement
-| 'System.out.println' '(' Expression ')' ';'
-| Identifier '=' Expression ';'
-| Identifier '[' Expression ']' '=' Expression ';'
+type:
+  INT LBRACE RBRACE
+| BOOLEAN
+| INT
+| IDENTIFIER
 ;
 
-Expression: Expression1;
+statement:
+  LCURLY ( statement )* RCURLY
+| IF LBRACKET expression RBRACKET statement ELSE statement
+| WHILE LBRACKET expression RBRACKET statement
+| PRINT LBRACKET expression RBRACKET SEMICOLON
+| IDENTIFIER EQUAL_ATTRIBUTION expression SEMICOLON
+| IDENTIFIER LBRACE expression RBRACE EQUAL_ATTRIBUTION expression SEMICOLON
+;
 
-/*
-Expression:
-  Expression ( '&&' | '<' | '+' | '-' | '*' ) Expression
-| Expression '[' Expression ']'
-| Expression '.' 'length'
-| Expression '.' Identifier '(' ( Expression ( ',' Expression )* )? ')'
+expression:
+  <assoc=left> expression ( LESSTHAN | AND | PLUS | MINUS | TIMES ) expression
+| <assoc=left> expression LBRACE expression RBRACE
+| <assoc=left> expression DOT 'length'
+| <assoc=left> expression DOT IDENTIFIER LBRACKET ( expression ( COLON expression )* )? RBRACKET
 | INTEGER_LITERAL
-| 'true'
-| 'false'
-| Identifier
-| 'this'
-| 'new' 'int' '[' Expression ']'
-| 'new' Identifier '(' ')'
-| '!' Expression
-| '(' Expression ')'
-;
-*/
-
-Expression1:
-  INTEGER_LITERAL Expression2
-| 'true' Expression2
-| 'false' Expression2
-| Identifier Expression2
-| 'this' Expression2
-| 'new' 'int' '[' Expression1 ']' Expression2
-| 'new' Identifier '(' ')' Expression2
-| '!' Expression1 Expression2
-| '(' Expression1 ')' Expression2
+| TRUE
+| FALSE
+| IDENTIFIER
+| THIS
+| NEW INT LBRACE expression RBRACE
+| NEW IDENTIFIER LBRACKET RBRACKET
+| NOT expression
+| LBRACKET expression RBRACKET
 ;
 
-Expression2:
-  ( '&&' | '<' | '+' | '-' | '*' ) Expression1
-| '[' Expression1 ']'
-| '.' 'length'
-| '.' Identifier '(' ( Expression1 ( ',' Expression1 )* )? ')'
-|
-;
+//structural tokens
+LBRACKET: '(';
+RBRACKET: ')';
+LBRACE: '[';
+RBRACE: ']';
+LCURLY: '{';
+RCURLY: '}';
+SEMICOLON: ';';
+COLON: ',';
+DOT: '.';
 
-Identifier: [a-z_][a-zA-Z_0-9]*;
+//reserved words
+CLASS: 'class';
+EXTENDS: 'extends';
+PUBLIC: 'public';
+STATIC: 'static';
+VOID: 'void';
+MAIN: 'main';
+INT: 'int';
+BOOLEAN: 'boolean';
+WHILE: 'while';
+IF: 'if';
+ELSE: 'else';
+PRINT: 'System.out.println';
+NEW: 'new';
+THIS: 'this';
+RETURN: 'return';
+
+//operators
+EQUAL_ATTRIBUTION: '=';
+AND: '&&';
+LESSTHAN: '<';
+PLUS: '+';
+MINUS: '-';
+TIMES: '*';
+NOT: '!';
+
+//constants
+TRUE: 'true';
+FALSE: 'false';
+INTEGER_LITERAL: [0-9]+;
+
+//id
+IDENTIFIER: [_a-zA-Z] [a-zA-Z0-9]*;
 
 WS: [ \t\r\n] -> skip;
-INTEGER_LITERAL: [0-9]+;
 
 
 
