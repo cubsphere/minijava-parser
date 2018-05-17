@@ -1,7 +1,7 @@
-grammar Antlr;
+grammar minijava;
 
 @header {
-	package antlr;
+	package minijava;
 }
 goal: MainClass ( ClassDeclaration )*;
 

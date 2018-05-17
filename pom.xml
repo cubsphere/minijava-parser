@@ -41,13 +41,13 @@
             </configuration>
             <executions>
                 <execution>
-                    <id>antlr-generate</id>
+                    <id>minijava-generate</id>
                     <phase>generate-sources</phase>
                     <goals>
                         <goal>antlr4</goal>
                     </goals>
                     <configuration>
-        				<outputDirectory>${basedir}/target/generated-sources/antlr4/antlr</outputDirectory>
+        				<outputDirectory>${basedir}/target/generated-sources/</outputDirectory>
                 	</configuration>
                 </execution>
             </executions>
