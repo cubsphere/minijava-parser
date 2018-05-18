@@ -12,19 +12,19 @@ varDeclaration: type IDENTIFIER SEMICOLON;
 methodDeclaration: PUBLIC type IDENTIFIER LBRACKET ( type IDENTIFIER ( COLON type IDENTIFIER )* )? RBRACKET LCURLY ( varDeclaration )* ( statement )* RETURN expression SEMICOLON RCURLY;
 
 type:
-  INT LBRACE RBRACE
-| BOOLEAN
-| INT
-| IDENTIFIER
+  INT LBRACE RBRACE #typeIntArray
+| BOOLEAN #typeBoolean
+| INT #typeInteger
+| IDENTIFIER #typeIdentifier
 ;
 
 statement:
-  LCURLY ( statement )* RCURLY
-| IF LBRACKET expression RBRACKET statement ELSE statement
-| WHILE LBRACKET expression RBRACKET statement
-| PRINT LBRACKET expression RBRACKET SEMICOLON
-| IDENTIFIER EQUAL_ATTRIBUTION expression SEMICOLON
-| IDENTIFIER LBRACE expression RBRACE EQUAL_ATTRIBUTION expression SEMICOLON
+  LCURLY ( statement )* RCURLY #statementBlock
+| IF LBRACKET expression RBRACKET statement ELSE statement #statementIf
+| WHILE LBRACKET expression RBRACKET statement #statementWhile
+| PRINT LBRACKET expression RBRACKET SEMICOLON #statementPrint
+| IDENTIFIER EQUAL_ASSIGN expression SEMICOLON #statementAssign
+| IDENTIFIER LBRACE expression RBRACE EQUAL_ASSIGN expression SEMICOLON #statementArrayAssign
 ;
 
 expression:
@@ -72,7 +72,7 @@ THIS: 'this';
 RETURN: 'return';
 
 //operators
-EQUAL_ATTRIBUTION: '=';
+EQUAL_ASSIGN: '=';
 AND: '&&';
 LESSTHAN: '<';
 PLUS: '+';
