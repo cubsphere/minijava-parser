@@ -3,13 +3,13 @@ grammar minijava;
 @header {
 	package minijava;
 }
-goal: mainClass ( classDeclaration )* EOF;
+goal: mainClass ( classDeclaration )* EOF #program;
 
-mainClass: CLASS IDENTIFIER LCURLY PUBLIC STATIC VOID VOID LBRACKET 'String' LBRACE RBRACE IDENTIFIER RBRACKET LCURLY statement RCURLY;
-classDeclaration: CLASS IDENTIFIER ( EXTENDS IDENTIFIER )? LCURLY ( varDeclaration )* ( methodDeclaration )* RCURLY;
+mainClass: CLASS IDENTIFIER LCURLY PUBLIC STATIC VOID VOID LBRACKET 'String' LBRACE RBRACE IDENTIFIER RBRACKET LCURLY statement RCURLY #main;
+classDeclaration: CLASS IDENTIFIER ( EXTENDS IDENTIFIER )? LCURLY ( varDeclaration )* ( methodDeclaration )* RCURLY #classDecl;
 
-varDeclaration: type IDENTIFIER SEMICOLON;
-methodDeclaration: PUBLIC type IDENTIFIER LBRACKET ( type IDENTIFIER ( COLON type IDENTIFIER )* )? RBRACKET LCURLY ( varDeclaration )* ( statement )* RETURN expression SEMICOLON RCURLY;
+varDeclaration: type IDENTIFIER SEMICOLON #varDecl;
+methodDeclaration: PUBLIC type IDENTIFIER LBRACKET ( type IDENTIFIER ( COLON type IDENTIFIER )* )? RBRACKET LCURLY ( varDeclaration )* ( statement )* RETURN expression SEMICOLON RCURLY #methodDecl;
 
 type:
   INT LBRACE RBRACE #typeIntArray
@@ -19,28 +19,32 @@ type:
 ;
 
 statement:
-  LCURLY ( statement )* RCURLY #statementBlock
-| IF LBRACKET expression RBRACKET statement ELSE statement #statementIf
-| WHILE LBRACKET expression RBRACKET statement #statementWhile
-| PRINT LBRACKET expression RBRACKET SEMICOLON #statementPrint
-| IDENTIFIER EQUAL_ASSIGN expression SEMICOLON #statementAssign
-| IDENTIFIER LBRACE expression RBRACE EQUAL_ASSIGN expression SEMICOLON #statementArrayAssign
+  LCURLY ( statement )* RCURLY #stmBlock
+| IF LBRACKET expression RBRACKET statement ELSE statement #stmIf
+| WHILE LBRACKET expression RBRACKET statement #stmWhile
+| PRINT LBRACKET expression RBRACKET SEMICOLON #stmPrint
+| IDENTIFIER EQUAL_ASSIGN expression SEMICOLON #stmAssign
+| IDENTIFIER LBRACE expression RBRACE EQUAL_ASSIGN expression SEMICOLON #stmArrayAssign
 ;
 
 expression:
-  <assoc=left> expression ( LESSTHAN | AND | PLUS | MINUS | TIMES ) expression
-| <assoc=left> expression LBRACE expression RBRACE
-| <assoc=left> expression DOT 'length'
-| <assoc=left> expression DOT IDENTIFIER LBRACKET ( expression ( COLON expression )* )? RBRACKET
-| INTEGER_LITERAL
-| TRUE
-| FALSE
-| IDENTIFIER
-| THIS
-| NEW INT LBRACE expression RBRACE
-| NEW IDENTIFIER LBRACKET RBRACKET
-| NOT expression
-| LBRACKET expression RBRACKET
+  <assoc=left> expression LESSTHAN expression #expLessThan
+| <assoc=left> expression AND expression #expAnd
+| <assoc=left> expression PLUS expression #expPlus
+| <assoc=left> expression MINUS expression #expMinus
+| <assoc=left> expression TIMES expression #expTimes
+| <assoc=left> expression LBRACE expression RBRACE #expArrayLookup
+| <assoc=left> expression DOT 'length' #expArrayLength
+| <assoc=left> expression DOT IDENTIFIER LBRACKET ( expression ( COLON expression )* )? RBRACKET #expCall
+| INTEGER_LITERAL #expIntegerLiteral
+| TRUE #expTrue
+| FALSE #expFalse
+| IDENTIFIER #expIdentifierExp
+| THIS #expThis
+| NEW INT LBRACE expression RBRACE #expNewArray
+| NEW IDENTIFIER LBRACKET RBRACKET #expNewObject
+| NOT expression #expNot
+| LBRACKET expression RBRACKET #expBracket
 ;
 
 //structural tokens
