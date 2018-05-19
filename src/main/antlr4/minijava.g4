@@ -5,7 +5,7 @@ grammar minijava;
 }
 goal: mainClass ( classDeclaration )* EOF #program;
 
-mainClass: CLASS IDENTIFIER LCURLY PUBLIC STATIC VOID VOID LBRACKET 'String' LBRACE RBRACE IDENTIFIER RBRACKET LCURLY statement RCURLY #main;
+mainClass: CLASS IDENTIFIER LCURLY PUBLIC STATIC VOID MAIN LBRACKET 'String' LBRACE RBRACE IDENTIFIER RBRACKET LCURLY statement RCURLY RCURLY #main;
 classDeclaration: CLASS IDENTIFIER ( EXTENDS IDENTIFIER )? LCURLY ( varDeclaration )* ( methodDeclaration )* RCURLY #classDecl;
 
 varDeclaration: type IDENTIFIER SEMICOLON #varDecl;
