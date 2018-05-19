@@ -23,7 +23,7 @@
 hs_err_pid*
 
 # compiled files
-bin
+/bin/
 target
 
 # local settings
