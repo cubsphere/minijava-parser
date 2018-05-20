@@ -75,7 +75,7 @@ public class ASTGenerator extends minijavaBaseListener {
 	}
 	
 	public void exitClassDecl(ClassDeclContext ctx) {		
-		Identifier className = getId(ctx, 2);
+		Identifier className = getId(ctx, 1);
 		VarDeclList vdl = vdlStack.pop();
 		MethodDeclList mdl = mdlStack.pop();
 		if(ctx.getChild(2).getText().equals("extends")) {
