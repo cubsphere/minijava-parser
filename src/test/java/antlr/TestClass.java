@@ -4,16 +4,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.ParserRuleContext;
 import org.junit.Test;
 
 import br.ufpe.cin.if688.minijava.ast.*;
 import br.ufpe.cin.if688.minijava.visitor.PrettyPrintVisitor;
 import minijava.*;
-import minijava.minijavaParser.*;
+import minijava.generated.minijavaLexer;
+import minijava.generated.minijavaParser;
 
 public class TestClass {	
 	private static String DIVISOR = "____________________________________________";
@@ -42,7 +41,7 @@ public class TestClass {
 				Program p = gen.getProgram();
 				PrettyPrintVisitor ppv = new PrettyPrintVisitor();
 				ppv.visit(p);
-				System.out.println(DIVISOR + "\n");
+				System.out.println(DIVISOR);
 			}
 		}
 	}
