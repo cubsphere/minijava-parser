@@ -3,13 +3,21 @@ grammar minijava;
 @header {
 	package minijava;
 }
-goal: mainClass ( classDeclaration )* EOF #program;
+goal: program EOF;
+program: mainClass ( classDeclaration )*;
 
-mainClass: CLASS IDENTIFIER LCURLY PUBLIC STATIC VOID MAIN LBRACKET 'String' LBRACE RBRACE IDENTIFIER RBRACKET LCURLY statement RCURLY RCURLY #main;
-classDeclaration: CLASS IDENTIFIER ( EXTENDS IDENTIFIER )? LCURLY ( varDeclaration )* ( methodDeclaration )* RCURLY #classDecl;
+mainClass: CLASS IDENTIFIER LCURLY PUBLIC STATIC VOID MAIN LBRACKET 'String' LBRACE RBRACE IDENTIFIER RBRACKET LCURLY statement RCURLY RCURLY;
+classDeclaration: CLASS IDENTIFIER ( EXTENDS IDENTIFIER )? LCURLY varDeclList methodDeclList RCURLY #classDecl;
+
+methodDeclList: ( methodDeclaration )*;
+varDeclList: ( varDeclaration )*;
+formalList: ( formal ( COLON formal )* )?;
+stmList: ( statement )*;
 
 varDeclaration: type IDENTIFIER SEMICOLON #varDecl;
-methodDeclaration: PUBLIC type IDENTIFIER LBRACKET ( type IDENTIFIER ( COLON type IDENTIFIER )* )? RBRACKET LCURLY ( varDeclaration )* ( statement )* RETURN expression SEMICOLON RCURLY #methodDecl;
+methodDeclaration: PUBLIC type IDENTIFIER LBRACKET formalList RBRACKET LCURLY varDeclList stmList RETURN expression SEMICOLON RCURLY #methodDecl;
+
+formal: type IDENTIFIER;
 
 type:
   INT LBRACE RBRACE #typeIntArray
@@ -19,7 +27,7 @@ type:
 ;
 
 statement:
-  LCURLY ( statement )* RCURLY #stmBlock
+  LCURLY stmList RCURLY #stmBlock
 | IF LBRACKET expression RBRACKET statement ELSE statement #stmIf
 | WHILE LBRACKET expression RBRACKET statement #stmWhile
 | PRINT LBRACKET expression RBRACKET SEMICOLON #stmPrint
@@ -28,14 +36,14 @@ statement:
 ;
 
 expression:
-  <assoc=left> expression LESSTHAN expression #expLessThan
+ <assoc=left> expression LBRACE expression RBRACE #expArrayLookup
+| <assoc=left> expression TIMES expression #expTimes
 | <assoc=left> expression AND expression #expAnd
 | <assoc=left> expression PLUS expression #expPlus
 | <assoc=left> expression MINUS expression #expMinus
-| <assoc=left> expression TIMES expression #expTimes
-| <assoc=left> expression LBRACE expression RBRACE #expArrayLookup
+| <assoc=left> expression LESSTHAN expression #expLessThan
 | <assoc=left> expression DOT 'length' #expArrayLength
-| <assoc=left> expression DOT IDENTIFIER LBRACKET ( expression ( COLON expression )* )? RBRACKET #expCall
+| <assoc=left> expression DOT IDENTIFIER LBRACKET callArguments RBRACKET #expCall
 | INTEGER_LITERAL #expIntegerLiteral
 | TRUE #expTrue
 | FALSE #expFalse
@@ -46,6 +54,8 @@ expression:
 | NOT expression #expNot
 | LBRACKET expression RBRACKET #expBracket
 ;
+
+callArguments: ( expression ( COLON expression )* )?;
 
 //structural tokens
 LBRACKET: '(';
