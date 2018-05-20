@@ -1,15 +1,13 @@
 package minijava;
 
-import java.util.List;
 import java.util.Stack;
 
-import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import br.ufpe.cin.if688.minijava.ast.*;
-import minijava.*;
-import minijava.minijavaParser.*;
+import minijava.generated.*;
+import minijava.generated.minijavaParser.*;
 
 public class ASTGenerator extends minijavaBaseListener {
 	//only one of these ever exists

@@ -8,24 +8,10 @@ import java.io.InputStream;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 
-import br.ufpe.cin.if688.minijava.ast.BooleanType;
-import br.ufpe.cin.if688.minijava.ast.ClassDeclExtends;
-import br.ufpe.cin.if688.minijava.ast.ClassDeclList;
-import br.ufpe.cin.if688.minijava.ast.ClassDeclSimple;
-import br.ufpe.cin.if688.minijava.ast.Identifier;
-import br.ufpe.cin.if688.minijava.ast.IdentifierType;
-import br.ufpe.cin.if688.minijava.ast.IntegerLiteral;
-import br.ufpe.cin.if688.minijava.ast.IntegerType;
-import br.ufpe.cin.if688.minijava.ast.MainClass;
-import br.ufpe.cin.if688.minijava.ast.MethodDeclList;
-import br.ufpe.cin.if688.minijava.ast.Print;
 import br.ufpe.cin.if688.minijava.ast.Program;
-import br.ufpe.cin.if688.minijava.ast.VarDecl;
-import br.ufpe.cin.if688.minijava.ast.VarDeclList;
 import br.ufpe.cin.if688.minijava.visitor.PrettyPrintVisitor;
 import minijava.ASTGenerator;
-import minijava.minijavaLexer;
-import minijava.minijavaParser;
+import minijava.generated.*;
 
 public class Main {
 
@@ -42,10 +28,6 @@ public class Main {
 				minijavaLexer lexer = new minijavaLexer(input);
 				CommonTokenStream token = new CommonTokenStream(lexer);
 				minijavaParser parser = new minijavaParser(token);
-				/*
-				for (int i = 0; i < goal.getChildCount(); ++i) {
-					System.out.println(i + ": " + goal.getChild(i).getText());
-				}*/
 				
 				ASTGenerator gen = new ASTGenerator();
 				parser.addParseListener(gen);

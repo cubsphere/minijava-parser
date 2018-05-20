@@ -1,7 +1,7 @@
 grammar minijava;
 
 @header {
-	package minijava;
+	package minijava.generated;
 }
 goal: program EOF;
 program: mainClass ( classDeclaration )*;
