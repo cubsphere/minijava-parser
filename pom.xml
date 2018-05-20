@@ -54,7 +54,7 @@
                         <goal>antlr4</goal>
                     </goals>
                     <configuration>
-        				<outputDirectory>${basedir}/target/generated-sources/antlr4/minijava</outputDirectory>
+        				<outputDirectory>${basedir}/src/main/java/minijava/generated</outputDirectory>
                 	</configuration>
                 </execution>
             </executions>
