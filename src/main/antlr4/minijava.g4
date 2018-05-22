@@ -36,14 +36,8 @@ statement:
 ;
 
 expression:
- <assoc=left> expression LBRACE expression RBRACE #expArrayLookup
-| <assoc=left> expression TIMES expression #expTimes
-| <assoc=left> expression AND expression #expAnd
-| <assoc=left> expression PLUS expression #expPlus
-| <assoc=left> expression MINUS expression #expMinus
-| <assoc=left> expression LESSTHAN expression #expLessThan
-| <assoc=left> expression DOT 'length' #expArrayLength
-| <assoc=left> expression DOT IDENTIFIER LBRACKET callArguments RBRACKET #expCall
+ LBRACKET expression RBRACKET #expBracket
+| NOT expression #expNot
 | INTEGER_LITERAL #expIntegerLiteral
 | TRUE #expTrue
 | FALSE #expFalse
@@ -51,8 +45,14 @@ expression:
 | THIS #expThis
 | NEW INT LBRACE expression RBRACE #expNewArray
 | NEW IDENTIFIER LBRACKET RBRACKET #expNewObject
-| NOT expression #expNot
-| LBRACKET expression RBRACKET #expBracket
+| <assoc=left> expression DOT 'length' #expArrayLength
+| <assoc=left> expression LBRACE expression RBRACE #expArrayLookup
+| <assoc=left> expression TIMES expression #expTimes
+| <assoc=left> expression AND expression #expAnd
+| <assoc=left> expression PLUS expression #expPlus
+| <assoc=left> expression MINUS expression #expMinus
+| <assoc=left> expression LESSTHAN expression #expLessThan
+| <assoc=left> expression DOT IDENTIFIER LBRACKET callArguments RBRACKET #expCall
 ;
 
 callArguments: ( expression ( COLON expression )* )?;
@@ -100,7 +100,7 @@ FALSE: 'false';
 INTEGER_LITERAL: [0-9]+;
 
 //id
-IDENTIFIER: [_a-zA-Z] [a-zA-Z0-9]*;
+IDENTIFIER: [_a-zA-Z] [_a-zA-Z0-9]*;
 
 WS: [ \t\r\n] -> skip;
 

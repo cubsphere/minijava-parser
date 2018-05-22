@@ -241,19 +241,6 @@ public class minijavaBaseListener implements minijavaListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterExpMinus(@NotNull minijavaParser.ExpMinusContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitExpMinus(@NotNull minijavaParser.ExpMinusContext ctx) { }
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterExpIntegerLiteral(@NotNull minijavaParser.ExpIntegerLiteralContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -261,6 +248,19 @@ public class minijavaBaseListener implements minijavaListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitExpIntegerLiteral(@NotNull minijavaParser.ExpIntegerLiteralContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExpMinus(@NotNull minijavaParser.ExpMinusContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpMinus(@NotNull minijavaParser.ExpMinusContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

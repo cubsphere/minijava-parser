@@ -217,19 +217,6 @@ public interface minijavaListener extends ParseTreeListener {
 	void exitExpTimes(@NotNull minijavaParser.ExpTimesContext ctx);
 
 	/**
-	 * Enter a parse tree produced by the {@code expMinus}
-	 * labeled alternative in {@link minijavaParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void enterExpMinus(@NotNull minijavaParser.ExpMinusContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code expMinus}
-	 * labeled alternative in {@link minijavaParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void exitExpMinus(@NotNull minijavaParser.ExpMinusContext ctx);
-
-	/**
 	 * Enter a parse tree produced by the {@code expIntegerLiteral}
 	 * labeled alternative in {@link minijavaParser#expression}.
 	 * @param ctx the parse tree
@@ -241,6 +228,19 @@ public interface minijavaListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitExpIntegerLiteral(@NotNull minijavaParser.ExpIntegerLiteralContext ctx);
+
+	/**
+	 * Enter a parse tree produced by the {@code expMinus}
+	 * labeled alternative in {@link minijavaParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpMinus(@NotNull minijavaParser.ExpMinusContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code expMinus}
+	 * labeled alternative in {@link minijavaParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpMinus(@NotNull minijavaParser.ExpMinusContext ctx);
 
 	/**
 	 * Enter a parse tree produced by the {@code expNot}
