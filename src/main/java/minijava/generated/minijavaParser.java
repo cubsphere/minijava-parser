@@ -18,14 +18,14 @@ public class minijavaParser extends Parser {
 		STATIC=15, VOID=16, MAIN=17, INT=18, BOOLEAN=19, WHILE=20, IF=21, ELSE=22, 
 		PRINT=23, NEW=24, THIS=25, RETURN=26, EQUAL_ASSIGN=27, AND=28, LESSTHAN=29, 
 		PLUS=30, MINUS=31, TIMES=32, NOT=33, TRUE=34, FALSE=35, INTEGER_LITERAL=36, 
-		IDENTIFIER=37, WS=38;
+		IDENTIFIER=37, COMMENT=38, WS=39;
 	public static final String[] tokenNames = {
 		"<INVALID>", "'length'", "'String'", "'('", "')'", "'['", "']'", "'{'", 
 		"'}'", "';'", "','", "'.'", "'class'", "'extends'", "'public'", "'static'", 
 		"'void'", "'main'", "'int'", "'boolean'", "'while'", "'if'", "'else'", 
 		"'System.out.println'", "'new'", "'this'", "'return'", "'='", "'&&'", 
 		"'<'", "'+'", "'-'", "'*'", "'!'", "'true'", "'false'", "INTEGER_LITERAL", 
-		"IDENTIFIER", "WS"
+		"IDENTIFIER", "COMMENT", "WS"
 	};
 	public static final int
 		RULE_goal = 0, RULE_program = 1, RULE_mainClass = 2, RULE_classDeclaration = 3, 
@@ -1657,7 +1657,7 @@ public class minijavaParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\uaf6f\u8320\u479d\ub75c\u4880\u1605\u191c\uab37\3(\u00ed\4\2\t\2\4"+
+		"\3\uaf6f\u8320\u479d\ub75c\u4880\u1605\u191c\uab37\3)\u00ed\4\2\t\2\4"+
 		"\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t"+
 		"\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\3\2\3\2\3\2\3\3\3\3"+
 		"\7\3&\n\3\f\3\16\3)\13\3\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3"+

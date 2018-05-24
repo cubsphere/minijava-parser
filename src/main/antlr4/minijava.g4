@@ -102,6 +102,10 @@ INTEGER_LITERAL: [0-9]+;
 //id
 IDENTIFIER: [_a-zA-Z] [_a-zA-Z0-9]*;
 
+COMMENT: (SINGLELINECOMMENT | MULTILINECOMMENT) -> skip;
+fragment SINGLELINECOMMENT: ('//' ~('\n')*);
+fragment MULTILINECOMMENT: ('/*' STARSLASH);
+fragment STARSLASH: ( ~'*' | ( '*'+ ~[*/]) )* '*/';
 WS: [ \t\r\n] -> skip;
 
 
