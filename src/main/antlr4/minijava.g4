@@ -104,8 +104,7 @@ IDENTIFIER: [_a-zA-Z] [_a-zA-Z0-9]*;
 
 COMMENT: (SINGLELINECOMMENT | MULTILINECOMMENT) -> skip;
 fragment SINGLELINECOMMENT: ('//' ~('\n')*);
-fragment MULTILINECOMMENT: ('/*' STARSLASH);
-fragment STARSLASH: ( ~'*' | ( '*'+ ~[*/]) )* '*/';
+fragment MULTILINECOMMENT: '/*' .*? '*/';
 WS: [ \t\r\n] -> skip;
 
 
