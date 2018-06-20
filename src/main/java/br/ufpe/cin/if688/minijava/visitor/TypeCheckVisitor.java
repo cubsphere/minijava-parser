@@ -10,6 +10,7 @@ import br.ufpe.cin.if688.minijava.ast.BooleanType;
 import br.ufpe.cin.if688.minijava.ast.Call;
 import br.ufpe.cin.if688.minijava.ast.ClassDeclExtends;
 import br.ufpe.cin.if688.minijava.ast.ClassDeclSimple;
+import br.ufpe.cin.if688.minijava.ast.Exp;
 import br.ufpe.cin.if688.minijava.ast.False;
 import br.ufpe.cin.if688.minijava.ast.Formal;
 import br.ufpe.cin.if688.minijava.ast.Identifier;
@@ -35,14 +36,39 @@ import br.ufpe.cin.if688.minijava.ast.True;
 import br.ufpe.cin.if688.minijava.ast.Type;
 import br.ufpe.cin.if688.minijava.ast.VarDecl;
 import br.ufpe.cin.if688.minijava.ast.While;
+import br.ufpe.cin.if688.minijava.symboltable.Class;
+import br.ufpe.cin.if688.minijava.symboltable.Method;
 import br.ufpe.cin.if688.minijava.symboltable.SymbolTable;
+import br.ufpe.cin.if688.minijava.symboltable.Variable;
 
 public class TypeCheckVisitor implements IVisitor<Type> {
 
 	private SymbolTable symbolTable;
+	private Class currClass;
+	private Method currMethod;
+	private boolean terminateUponError;
 
-	TypeCheckVisitor(SymbolTable st) {
-		symbolTable = st;
+	public TypeCheckVisitor(SymbolTable st) {
+		this.symbolTable = st;
+		this.terminateUponError = false;
+	}
+	
+	private void err(String s) {
+		s = "ERROR: " + s;
+		if (terminateUponError) {
+			throw new Error(s);
+		} else {
+			System.out.println(s);
+		}
+	}
+	
+	private void informativeError(String s) {
+		if(currClass != null) {
+			s += ", in method " + currMethod.getId() + ", in class" + currClass.getId();
+		} else {
+			s += ", in public static void main";
+		}
+		err(s);
 	}
 
 	// MainClass m;
@@ -58,8 +84,6 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 	// Identifier i1,i2;
 	// Statement s;
 	public Type visit(MainClass n) {
-		n.i1.accept(this);
-		n.i2.accept(this);
 		n.s.accept(this);
 		return null;
 	}
@@ -68,14 +92,28 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 	// VarDeclList vl;
 	// MethodDeclList ml;
 	public Type visit(ClassDeclSimple n) {
-		n.i.accept(this);
-		for (int i = 0; i < n.vl.size(); i++) {
-			n.vl.elementAt(i).accept(this);
-		}
+		currClass = symbolTable.getClass(n.i.s);
 		for (int i = 0; i < n.ml.size(); i++) {
 			n.ml.elementAt(i).accept(this);
 		}
 		return null;
+	}
+
+	private void parentCheck(String name, String parent) {
+		if (symbolTable.getClass(parent) == null) {
+			err("Parent class " + parent + " of class " + name + " was not defined");
+		}
+		while (parent != null) {
+			if (name.equals(parent)) {
+				err("Cyclic inheritance at class " + name);
+				return;
+			}
+			try {
+				parent = symbolTable.getClass(parent).parent();
+			} catch (NullPointerException e) {
+				return;
+			}
+		}
 	}
 
 	// Identifier i;
@@ -83,23 +121,19 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 	// VarDeclList vl;
 	// MethodDeclList ml;
 	public Type visit(ClassDeclExtends n) {
-		n.i.accept(this);
-		n.j.accept(this);
-		for (int i = 0; i < n.vl.size(); i++) {
-			n.vl.elementAt(i).accept(this);
-		}
+		currClass = symbolTable.getClass(n.i.s);
+		parentCheck(n.i.s, n.j.toString());
 		for (int i = 0; i < n.ml.size(); i++) {
 			n.ml.elementAt(i).accept(this);
 		}
+		currClass = null;
 		return null;
 	}
 
 	// Type t;
 	// Identifier i;
 	public Type visit(VarDecl n) {
-		n.t.accept(this);
-		n.i.accept(this);
-		return null;
+		return n.t;
 	}
 
 	// Type t;
@@ -109,44 +143,43 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 	// StatementList sl;
 	// Exp e;
 	public Type visit(MethodDecl n) {
-		n.t.accept(this);
-		n.i.accept(this);
-		for (int i = 0; i < n.fl.size(); i++) {
-			n.fl.elementAt(i).accept(this);
-		}
-		for (int i = 0; i < n.vl.size(); i++) {
-			n.vl.elementAt(i).accept(this);
-		}
+		currMethod = currClass.getMethod(n.i.s);
 		for (int i = 0; i < n.sl.size(); i++) {
 			n.sl.elementAt(i).accept(this);
 		}
-		n.e.accept(this);
-		return null;
+		
+		Type t = n.e.accept(this);
+		if (!symbolTable.compareTypes(t, currMethod.type())) {
+			informativeError("Return value must be of type " +
+		                     currMethod.type().getClass().getSimpleName() +
+				             "(currently of type " + t.getClass().getSimpleName() + ")");
+		}
+		
+		currMethod = null;
+		return n.t;
 	}
 
 	// Type t;
 	// Identifier i;
 	public Type visit(Formal n) {
-		n.t.accept(this);
-		n.i.accept(this);
-		return null;
+		return n.t;
 	}
 
 	public Type visit(IntArrayType n) {
-		return null;
+		return n;
 	}
 
 	public Type visit(BooleanType n) {
-		return null;
+		return n;
 	}
 
 	public Type visit(IntegerType n) {
-		return null;
+		return n;
 	}
 
 	// String s;
 	public Type visit(IdentifierType n) {
-		return null;
+		return n;
 	}
 
 	// StatementList sl;
@@ -160,7 +193,9 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 	// Exp e;
 	// Statement s1,s2;
 	public Type visit(If n) {
-		n.e.accept(this);
+		if (!(n.e.accept(this) instanceof BooleanType)) {
+			informativeError("Condition of an if must be evaluate to a boolean");
+		}
 		n.s1.accept(this);
 		n.s2.accept(this);
 		return null;
@@ -169,7 +204,9 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 	// Exp e;
 	// Statement s;
 	public Type visit(While n) {
-		n.e.accept(this);
+		if (!(n.e.accept(this) instanceof BooleanType)) {
+			informativeError("Condition of a while must be evaluate to a boolean");
+		}
 		n.s.accept(this);
 		return null;
 	}
@@ -183,121 +220,182 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 	// Identifier i;
 	// Exp e;
 	public Type visit(Assign n) {
-		n.i.accept(this);
-		n.e.accept(this);
+		Type t1 = n.i.accept(this);
+		Type t2 = n.e.accept(this);
+		if(!symbolTable.compareTypes(t1, t2)) {
+			informativeError("Assigment to " + n.i.s +
+					         " must be of type " + t1.getClass().getSimpleName() +
+					         " (currently of type " + t2.getClass().getSimpleName() + ")");
+		}
 		return null;
+	}
+	
+	private void arrayCheck(Exp e , Object n) {
+		Type t = e.accept(this);
+		if(!(t instanceof IntArrayType)) {
+			informativeError("Expected array, got " + t.getClass().getSimpleName() +
+			                 ", in " + n.getClass().getSimpleName());
+		}
+	}
+	
+	private BooleanType boolCheck(Exp e, Object n) {
+		Type t = e.accept(this);
+		if(!(t instanceof BooleanType)) {
+			informativeError("Expected boolean, got " + t.getClass().getSimpleName() +
+					         ", in " + n.getClass().getSimpleName());
+			return new BooleanType(); //this allows the program to continue
+			                          //and possibly find more type errors.
+		}
+		return (BooleanType) t;
+	}
+	
+	private IntegerType intCheck(Exp e , Object n) {
+		Type t = e.accept(this);
+		if(!(t instanceof IntegerType)) {
+			informativeError("Expected integer, got " + t.getClass().getSimpleName() +
+			                 ", in " + n.getClass().getSimpleName());
+			return new IntegerType();
+		}
+		return (IntegerType) t;
 	}
 
 	// Identifier i;
 	// Exp e1,e2;
 	public Type visit(ArrayAssign n) {
-		n.i.accept(this);
-		n.e1.accept(this);
-		n.e2.accept(this);
+		arrayCheck(new IdentifierExp(n.i.s), n);
+		intCheck(n.e1, n);
+		intCheck(n.e2, n);
 		return null;
 	}
 
 	// Exp e1,e2;
 	public Type visit(And n) {
-		n.e1.accept(this);
-		n.e2.accept(this);
-		return null;
+		boolCheck(n.e1, n);
+		return boolCheck(n.e2, n);
 	}
 
 	// Exp e1,e2;
 	public Type visit(LessThan n) {
-		n.e1.accept(this);
-		n.e2.accept(this);
-		return null;
+		intCheck(n.e1, n);
+		intCheck(n.e2, n);
+		return new BooleanType();
 	}
 
 	// Exp e1,e2;
 	public Type visit(Plus n) {
-		n.e1.accept(this);
-		n.e2.accept(this);
-		return null;
+		intCheck(n.e1, n);
+		return intCheck(n.e2, n);
 	}
 
 	// Exp e1,e2;
 	public Type visit(Minus n) {
-		n.e1.accept(this);
-		n.e2.accept(this);
-		return null;
+		intCheck(n.e1, n);
+		return intCheck(n.e2, n);
 	}
 
 	// Exp e1,e2;
 	public Type visit(Times n) {
-		n.e1.accept(this);
-		n.e2.accept(this);
-		return null;
+		intCheck(n.e1, n);
+		return intCheck(n.e2, n);
 	}
 
 	// Exp e1,e2;
 	public Type visit(ArrayLookup n) {
-		n.e1.accept(this);
-		n.e2.accept(this);
-		return null;
+		arrayCheck(n.e1, n);
+		return intCheck(n.e2, n);
 	}
 
 	// Exp e;
 	public Type visit(ArrayLength n) {
-		n.e.accept(this);
-		return null;
+		arrayCheck(n.e, n);
+		return new IntegerType();
 	}
 
 	// Exp e;
 	// Identifier i;
 	// ExpList el;
 	public Type visit(Call n) {
-		n.e.accept(this);
-		n.i.accept(this);
-		for (int i = 0; i < n.el.size(); i++) {
-			n.el.elementAt(i).accept(this);
+		IdentifierType classType = null;
+		Type t = n.e.accept(this);
+		if(!(t instanceof IdentifierType)) {
+			informativeError("Attempted to call method of non-class type " +
+		                     t.getClass().getSimpleName());
+			throw new Error(""); //can't figure out the intended return type
+			                     //so just stop execution instead
+		} else {
+			classType = (IdentifierType) t;
 		}
-		return null;
+		Method m = symbolTable.getMethod(n.i.s, classType.s);
+		
+		int i;
+		for (i = 0; i < n.el.size(); i++) {
+			Variable v = m.getParamAt(i);
+			if (v == null) {
+				informativeError("Call to method " + m.getId() + " has too many arguments");
+				return m.type();
+			}
+			
+			Type argType = n.el.elementAt(i).accept(this);
+			if (!symbolTable.compareTypes(v.type(), argType)) {
+				informativeError("Parameter \"" + v.id() + "\" of method " + m.getId() +
+						         " must be of type " + v.type().getClass().getSimpleName() +
+						         ", got type " + argType.getClass().getSimpleName());
+			}
+		}
+		if (m.getParamAt(i) != null) {
+			informativeError("Call to method " + m.getId() + " has too few arguments");
+		}
+		
+		return m.type();
 	}
 
 	// int i;
 	public Type visit(IntegerLiteral n) {
-		return null;
+		return new IntegerType();
 	}
 
 	public Type visit(True n) {
-		return null;
+		return new BooleanType();
 	}
 
 	public Type visit(False n) {
-		return null;
+		return new BooleanType();
 	}
 
 	// String s;
 	public Type visit(IdentifierExp n) {
-		return null;
+		return symbolTable.getVarType(currMethod, currClass, n.s);
 	}
 
 	public Type visit(This n) {
+		try {
+			return new IdentifierType(currClass.getId());
+		} catch (NullPointerException e) {
+			err("Cannot use \"this\" in main method");
+		}
+		System.exit(0);
 		return null;
 	}
 
 	// Exp e;
 	public Type visit(NewArray n) {
-		n.e.accept(this);
-		return null;
+		intCheck(n.e, n);
+		return new IntArrayType();
 	}
 
 	// Identifier i;
 	public Type visit(NewObject n) {
-		return null;
+		return new IdentifierType(n.i.s);
 	}
 
 	// Exp e;
 	public Type visit(Not n) {
-		n.e.accept(this);
-		return null;
+		boolCheck(n.e, n);
+		return new BooleanType();
 	}
 
 	// String s;
 	public Type visit(Identifier n) {
-		return null;
+		return symbolTable.getVarType(currMethod, currClass, n.s);
 	}
 }
