@@ -1,0 +1,21 @@
+class Test {
+  public static void main (String [] test) {
+    System.out.println(1);
+  }
+}
+
+class InvalidClass extends UndefinedClass {
+
+}
+
+class A extends B { 
+
+}
+
+class B extends C { 
+
+}
+
+class C extends A {
+
+}

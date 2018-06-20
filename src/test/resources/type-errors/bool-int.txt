@@ -1,0 +1,27 @@
+class Teste {
+  public static void main (String [] Testando) {
+    System.out.println(2<(true+5));
+  }
+}
+
+class A { 
+  boolean flag;
+  int num;
+  
+  public int test() {
+    int num2;
+    num = true && 5;
+    num = 1;
+    num2 = 2;
+    flag = num2*num;
+    return flag;
+  }
+}
+
+class B extends A { 
+
+}
+
+class C { 
+  A obj;
+}

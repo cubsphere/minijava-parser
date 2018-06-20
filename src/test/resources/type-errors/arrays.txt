@@ -1,0 +1,16 @@
+class Main {
+    public static void main (String [] testy) {
+        {
+            System.out.println(new What().whatAreYouDoing());
+        }
+    }
+}
+
+class What {
+    public int whatAreYouDoing () {
+        int index;
+        int[] arr;
+        index[index.length] = arr[true];
+        return index;
+    }
+}

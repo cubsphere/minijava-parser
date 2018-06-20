@@ -1,0 +1,22 @@
+class Main {
+    public static void main (String [] testy) {
+        {
+            System.out.println(new CoolClass().coolMethod());
+            System.out.println(new CoolClass().coolMethod(true));
+            System.out.println(new CoolClass().coolMethod(10,5));
+        }
+    }
+}
+
+class CoolClass {
+    public int coolMethod (int size) {
+        int index;
+        int[] arr;
+        index = index.set(1);
+        arr = new int[size];
+        while(index < arr.length) {
+            arr[index] = 1 + arr[index-1] * 2 + 1;
+        }
+        return arr[arr.length - 1];
+    }
+}

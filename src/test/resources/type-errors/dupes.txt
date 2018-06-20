@@ -1,0 +1,27 @@
+class Main {
+    public static void main (String [] testy) {
+        {
+            System.out.println(1);
+        }
+    }
+}
+
+class Test {
+    int a;
+    int a;
+    
+    public int test () {
+        int b;
+        int b;
+        b = 1;
+        return b;
+    }
+    
+    public int test () {
+        return 1;
+    }
+}
+
+class Test {
+
+}
