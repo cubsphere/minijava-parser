@@ -1,0 +1,15 @@
+class Test {
+  public static void main (String [] test) {
+    {
+      while(5) {
+        if(new A()) {
+        } else {
+        }
+      }
+    }
+  }
+}
+
+class A { 
+
+}
