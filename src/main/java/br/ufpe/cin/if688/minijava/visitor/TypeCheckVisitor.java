@@ -46,6 +46,7 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 	private SymbolTable symbolTable;
 	private Class currClass;
 	private Method currMethod;
+	private String main;
 	private boolean terminateUponError;
 
 	public TypeCheckVisitor(SymbolTable st) {
@@ -63,10 +64,10 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 	}
 	
 	private void informativeError(String s) {
-		if(currClass != null) {
-			s += ", in method " + currMethod.getId() + ", in class" + currClass.getId();
-		} else {
+		if(currMethod == null) {
 			s += ", in public static void main";
+		} else {
+			s += ", in method " + currMethod.getId() + ", in class" + currClass.getId();
 		}
 		err(s);
 	}
@@ -84,7 +85,10 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 	// Identifier i1,i2;
 	// Statement s;
 	public Type visit(MainClass n) {
+		main = n.i1.s;
+		currClass = symbolTable.getClass(n.i1.s);
 		n.s.accept(this);
+		currClass = null;
 		return null;
 	}
 
@@ -100,8 +104,13 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 	}
 
 	private void parentCheck(String name, String parent) {
+		if (parent.equals(main)) {
+			err("Cannot extend main class, attempted to at " + name);
+			return;
+		}
 		if (symbolTable.getClass(parent) == null) {
 			err("Parent class " + parent + " of class " + name + " was not defined");
+			return;
 		}
 		while (parent != null) {
 			if (name.equals(parent)) {
@@ -122,7 +131,7 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 	// MethodDeclList ml;
 	public Type visit(ClassDeclExtends n) {
 		currClass = symbolTable.getClass(n.i.s);
-		parentCheck(n.i.s, n.j.toString());
+		parentCheck(n.i.s, n.j.s);
 		for (int i = 0; i < n.ml.size(); i++) {
 			n.ml.elementAt(i).accept(this);
 		}

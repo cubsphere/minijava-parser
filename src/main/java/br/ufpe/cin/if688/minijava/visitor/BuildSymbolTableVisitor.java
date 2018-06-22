@@ -67,17 +67,10 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 	// MainClass m;
 	// ClassDeclList cl;
 	public Void visit(Program n) {
-		//main class produces no useful symbols
+		n.m.accept(this);
 		for (int i = 0; i < n.cl.size(); i++) {
 			n.cl.elementAt(i).accept(this);
 		}
-		return null;
-	}
-
-	// Identifier i1,i2;
-	// Statement s;
-	public Void visit(MainClass n) {
-		//main class produces no useful symbols
 		return null;
 	}
 	
@@ -87,11 +80,20 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 		currClass = symbolTable.getClass(name);
 	}
 
+	// Identifier i1,i2;
+	// Statement s;
+	public Void visit(MainClass n) {
+		classInit(n.i1.s, null);
+		currClass.addVar(n.i2.s, new IntArrayType());
+		//somewhat improper since the symbol actually belongs to the main method
+		return null;
+	}
+
 	// Identifier i;
 	// VarDeclList vl;
 	// MethodDeclList ml;
 	public Void visit(ClassDeclSimple n) {
-		classInit(n.i.toString(), null);
+		classInit(n.i.s, null);
 		
 		for (int i = 0; i < n.vl.size(); i++) {
 			n.vl.elementAt(i).accept(this);
@@ -100,7 +102,7 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 		for (int i = 0; i < n.ml.size(); i++) {
 			n.ml.elementAt(i).accept(this);
 		}
-		
+		currClass = null;
 		return null;
 	}
 
@@ -109,7 +111,7 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 	// VarDeclList vl;
 	// MethodDeclList ml;
 	public Void visit(ClassDeclExtends n) {
-		classInit(n.i.toString(), n.j.toString());
+		classInit(n.i.s, n.j.s);
 		
 		for (int i = 0; i < n.vl.size(); i++) {
 			n.vl.elementAt(i).accept(this);
@@ -118,7 +120,7 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 		for (int i = 0; i < n.ml.size(); i++) {
 			n.ml.elementAt(i).accept(this);
 		}
-		
+		currClass = null;
 		return null;
 	}
 
@@ -127,13 +129,13 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 	public Void visit(VarDecl n) {
 		boolean dupe;
 		if(currMethod == null) {
-			dupe = !currClass.addVar(n.i.toString(), n.t);
+			dupe = !currClass.addVar(n.i.s, n.t);
 		} else {
-			dupe = !currMethod.addVar(n.i.toString(), n.t);
+			dupe = !currMethod.addVar(n.i.s, n.t);
 		}
 		
 		if (dupe) {
-			String err = "Duplicate variable declaration for " + n.i.toString();
+			String err = "Duplicate variable declaration for " + n.i.s;
 			if (currMethod != null) {
 				err += " in method " + currMethod.getId() + ",";
 			}
@@ -151,11 +153,11 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 	// StatementList sl;
 	// Exp e;
 	public Void visit(MethodDecl n) {
-		boolean dupe = !currClass.addMethod(n.i.toString(), n.t);
+		boolean dupe = !currClass.addMethod(n.i.s, n.t);
 		if (dupe) {
-			err("Duplicate method declaration for " + n.i.toString() + " in class " + currClass.getId());
+			err("Duplicate method declaration for " + n.i.s + " in class " + currClass.getId());
 		}
-		currMethod = currClass.getMethod(n.i.toString());
+		currMethod = currClass.getMethod(n.i.s);
 		
 		for (int i = 0; i < n.fl.size(); i++) {
 			n.fl.elementAt(i).accept(this);
@@ -171,7 +173,7 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 	// Type t;
 	// Identifier i;
 	public Void visit(Formal n) {
-		currMethod.addParam(n.i.toString(), n.t);
+		currMethod.addParam(n.i.s, n.t);
 		return null;
 	}
 	
