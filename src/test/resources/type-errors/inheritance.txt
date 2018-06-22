@@ -4,6 +4,10 @@ class Test {
   }
 }
 
+class ExtendsMain extends Test {
+
+}
+
 class InvalidClass extends UndefinedClass {
 
 }
